@@ -1,0 +1,39 @@
+{
+  "name": "dinner-tower-board",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Departure-board MCP App for Dinner Tower: one self-contained HTML file that renders a PlanView and calls server tools.",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "vite build && vite build --config vite.harness.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:e2e": "npm run build && playwright test",
+    "test:real": "npm run build && npm --prefix ../sim run build && playwright test --config playwright.real.config.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "2.0.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.3.1",
+    "@modelcontextprotocol/express": "2.0.2",
+    "@modelcontextprotocol/node": "2.1.1",
+    "@modelcontextprotocol/server": "2.3.1",
+    "@playwright/test": "1.64.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.10.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0",
+    "vite": "8.3.4",
+    "vite-plugin-singlefile": "2.3.4",
+    "vitest": "4.1.12",
+    "zod": "^4.2.0"
+  }
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  Dinner Tower — departure board MCP App.
+  Entry adapted from modelcontextprotocol/ext-apps `examples/basic-server-vanillajs`
+  (`mcp-app.html` + `vite.config.ts`, MIT, https://github.com/modelcontextprotocol/ext-apps).
+  Changes: airport departure-board markup for the PlanView, no host theme switching
+  (the board is always dark), split-flap text instead of plain text nodes.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dinner Tower — Departure Board</title>
+  </head>
+  <body>
+    <div class="board" id="board" data-testid="board">
+      <header class="head">
+        <div class="head-brand">
+          <div class="brand">DINNER TOWER</div>
+          <div class="brand-sub">KITCHEN AIR TRAFFIC</div>
+        </div>
+        <div class="head-serve" id="serve-block" data-testid="serve-block">
+          <div class="serve-line">
+            <span class="serve-label">SERVE</span>
+            <span class="serve-time" id="serve" data-testid="serve">--:--</span>
+          </div>
+        </div>
+        <div class="head-now" id="now-block" data-testid="now-block">
+          <div class="now-line">
+            <span class="now-label">NOW</span>
+            <span class="now-time" id="now" data-testid="now">--:--</span>
+          </div>
+          <div class="demo-badge" id="demo-badge" data-testid="demo-clock-badge" hidden>
+            DEMO CLOCK
+          </div>
+        </div>
+      </header>
+
+      <section class="banner" id="conflict" data-testid="conflict-banner" hidden aria-live="polite">
+        <p class="banner-msg" id="conflict-message" data-testid="conflict-message"></p>
+        <div class="banner-actions" id="conflict-actions" data-testid="conflict-actions"></div>
+      </section>
+
+      <section class="tbl">
+        <div class="row row-head" aria-hidden="true">
+          <span class="cell col-time">TIME</span>
+          <span class="cell col-dish">DISH</span>
+          <span class="cell col-step">STEP</span>
+          <span class="cell col-station">STATION</span>
+          <span class="cell col-status">STATUS</span>
+        </div>
+        <div class="rows" id="rows" data-testid="rows"></div>
+        <div class="empty" id="empty" data-testid="empty">WAITING FOR A DINNER PLAN…</div>
+      </section>
+
+      <footer class="timeline" id="timeline" data-testid="timeline" hidden></footer>
+
+      <div class="error" id="board-error" data-testid="board-error" role="alert" hidden></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+  Test-only MCP Apps host for the Dinner Tower board (T5). It is a real host:
+  a real MCP client over Streamable HTTP, the board HTML read from the
+  `ui://dinner-tower/board.html` resource, and an AppBridge in an iframe.
+  Not product code — product code must not import anything from test/.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dinner Tower board — host harness</title>
+  </head>
+  <body>
+    <main class="rig">
+      <section class="screen-wrap">
+        <div class="screen" id="screen" data-testid="screen"></div>
+        <p class="hint">MCP Apps host harness · headless test rig · 880×550 screen</p>
+      </section>
+      <aside class="log">
+        <h1>tools/call log</h1>
+        <p class="log-note">Recorded on the host side, as the AppBridge forwards them.</p>
+        <ol id="call-log" data-testid="call-log"></ol>
+        <p class="status" id="status" data-testid="status">connecting…</p>
+      </aside>
+    </main>
+    <script type="module" src="./harness.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "dinner-tower-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dinner Tower MCP server — air-traffic control for a Thanksgiving kitchen",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/express": "2.0.2",
+    "@modelcontextprotocol/ext-apps": "2.0.3",
+    "@modelcontextprotocol/node": "2.1.1",
+    "@modelcontextprotocol/server": "2.3.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.3.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.19.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.2",
+    "vitest": "4.1.12"
+  }
+}

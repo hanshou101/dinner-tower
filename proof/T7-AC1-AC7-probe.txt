@@ -1,0 +1,47 @@
+      server up on http://127.0.0.1:3411 (demo clock 13:00, data /tmp/multica-task-3770313979/t7-probe-sBzRRN/household.json, board built)
+PASS  AC-1 /health body
+PASS  AC-1 initialize protocolVersion === 2025-11-25
+      session 61e1bded-58b4-42c8-a597-7313bf0f14b4
+PASS  AC-1 Mcp-Session-Id present (stateful)
+PASS  AC-1 follow-up request on same session
+PASS  AC-2 tools/list is exactly the 6 SPEC tools
+PASS  AC-2 every tool has title/description/inputSchema
+PASS  AC-2 plan_dinner has outputSchema + _meta.ui.resourceUri
+PASS  AC-2 whats_next has outputSchema + _meta.ui.resourceUri
+PASS  AC-2 report_delay has outputSchema + _meta.ui.resourceUri
+PASS  AC-2 list_dishes annotations.readOnlyHint === true
+PASS  AC-2 get_kitchen annotations.readOnlyHint === true
+PASS  AC-2 whats_next annotations.readOnlyHint === true
+      board bytes=252748
+PASS  AC-2 resources/read board.html → ext-apps MIME + HTML
+PASS  AC-2 prompts/list contains thanksgiving
+PASS  AC-2 initialize instructions non-empty
+PASS  AC-4 no-elicitation host → option keep-temps + conflict.options both ids
+PASS  AC-4 primary has stuffing wait 220 min
+PASS  AC-4 primary steps === table A  [13 steps exact]
+PASS  AC-4 explicit option share-oven → option + no conflict
+PASS  AC-4 share-oven steps === table B  [13 steps exact]
+PASS  AC-3 same input twice → byte-identical JSON
+PASS  AC-3 constraints on table B (hands/racks/temps/deps/hold)  [hands/burners/racks/temps/deps/hold-window ok]
+PASS  AC-4 elicitation/create sent exactly once (form)
+      message: Your oven can only hold one temperature at a time, so Sourdough Stuffing would finish early and wait too long. How should I plan it?
+PASS  AC-4 elicitation message + options share-oven/keep-temps
+PASS  AC-4 accept share-oven → table B  [13 steps exact]
+PASS  AC-4 accept share-oven → option share-oven, conflict null
+PASS  AC-4 decline → keep-temps + conflict
+PASS  AC-4 decline → table A  [13 steps exact]
+      text: Too late to serve at 7:00 PM. The earliest I can land everything is 9:50 PM.
+PASS  AC-7 clock 18:00 → isError + 9:50 PM
+PASS  AC-7 failed plan does not touch the active plan
+PASS  AC-5 turkey +20 @18:20 → serveAt 19:20 / original 19:00
+PASS  AC-5 steps === table C  [13 steps exact]
+      changes: turkey.roast 15:30–18:30→15:30–18:50 | green_beans.trim 18:27–18:37→18:47–18:57 | mashed_potatoes.boil 18:30–18:50→18:50–19:10 | turkey.rest 18:30–19:00→18:50–19:20 | green_beans.blanch 18:37–18:42→18:57–19:02 | green_beans.saute 18:42–18:50→19:02–19:10 | rolls.bake 18:42–19:00→19:02–19:20 | gravy.make 18:45–19:00→19:05–19:20 | mashed_potatoes.mash 18:50–19:00→19:10–19:20
+PASS  AC-5 changes lists exactly the 9 moved steps with from/to
+PASS  AC-5 revision incremented
+PASS  AC-5 nothing starts before 18:20 except steps already begun
+PASS  AC-5 second case: turkey.rest +15 @18:40 → serveAt 19:15
+PASS  AC-5 steps === table D  [13 steps exact]
+      before restart: cooks=3 serveAt=19:00 revision=1
+PASS  AC-6 kitchen survives a real process restart + new session
+PASS  AC-6 whats_next returns the same serveAt and the same step times
+ALL PASS

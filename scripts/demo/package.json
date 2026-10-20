@@ -1,0 +1,21 @@
+{
+  "name": "dinner-tower-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo video pipeline for Dinner Tower: drives the real simulator in headless Chromium, voices the lines with macOS say, muxes H.264/AAC with ffmpeg.",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "record": "tsx record.ts",
+    "mux": "tsx mux.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "^20.19.0",
+    "ffmpeg-static": "5.3.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0"
+  }
+}

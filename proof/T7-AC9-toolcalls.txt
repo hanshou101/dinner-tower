@@ -1,0 +1,27 @@
+plan_dinner
+preset
+{"dishes":["turkey","stuffing","mashed_potatoes","green_beans","gravy",…
+115 ms
+✓
+Dinner lands at 7:00 PM — 6 dishes, 13 steps, share-oven plan.
+Next up: Season & truss the turkey at 3:10 PM; Roast the turkey at 3:30 PM; Toss bread, broth & herbs at 5:50 PM.
+JSON
+---
+whats_next
+clock
+{}
+4 ms
+✓
+Dinner lands at 7:00 PM — 6 dishes, 13 steps, share-oven plan.
+Next up: Trim the green beans at 6:27 PM; Boil the potatoes at 6:30 PM; Rest the turkey under foil at 6:30 PM.
+JSON
+---
+report_delay
+app
+{"target":"turkey.roast","minutes":10}
+4 ms
+✓
+Dinner lands at 7:10 PM — 6 dishes, 13 steps, share-oven plan (moved from 7:00 PM).
+Next up: Trim the green beans at 6:37 PM; Boil the potatoes at 6:40 PM; Rest the turkey under foil at 6:40 PM.
+Replanned: 9 steps moved.
+JSON

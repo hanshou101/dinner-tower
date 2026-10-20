@@ -1,0 +1,301 @@
+{
+  "serveAt": "19:00",
+  "originalServeAt": "19:00",
+  "now": "13:00",
+  "demoClock": true,
+  "option": "share-oven",
+  "revision": 1,
+  "kitchen": {
+    "ovens": 1,
+    "ovenRacks": 2,
+    "burners": 4,
+    "cooks": 2,
+    "ovenSwitchMinutes": 10
+  },
+  "dishes": [
+    {
+      "id": "turkey",
+      "name": "Roast Turkey",
+      "icon": "🦃",
+      "readyAt": "19:00",
+      "waitMinutes": 0,
+      "holdMinutes": 30,
+      "ok": true
+    },
+    {
+      "id": "stuffing",
+      "name": "Sourdough Stuffing",
+      "icon": "🍞",
+      "readyAt": "19:00",
+      "waitMinutes": 0,
+      "holdMinutes": 20,
+      "ok": true
+    },
+    {
+      "id": "mashed_potatoes",
+      "name": "Mashed Potatoes",
+      "icon": "🥔",
+      "readyAt": "19:00",
+      "waitMinutes": 0,
+      "holdMinutes": 30,
+      "ok": true
+    },
+    {
+      "id": "green_beans",
+      "name": "Green Beans Almondine",
+      "icon": "🫛",
+      "readyAt": "18:50",
+      "waitMinutes": 10,
+      "holdMinutes": 10,
+      "ok": true
+    },
+    {
+      "id": "gravy",
+      "name": "Pan Gravy",
+      "icon": "🥣",
+      "readyAt": "19:00",
+      "waitMinutes": 0,
+      "holdMinutes": 15,
+      "ok": true
+    },
+    {
+      "id": "rolls",
+      "name": "Dinner Rolls",
+      "icon": "🥖",
+      "readyAt": "19:00",
+      "waitMinutes": 0,
+      "holdMinutes": 15,
+      "ok": true
+    }
+  ],
+  "steps": [
+    {
+      "stepId": "turkey.prep",
+      "dishId": "turkey",
+      "dishName": "Roast Turkey",
+      "icon": "🦃",
+      "label": "Season & truss the turkey",
+      "start": "15:10",
+      "end": "15:30",
+      "minutes": 20,
+      "uses": [
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "turkey.roast",
+      "dishId": "turkey",
+      "dishName": "Roast Turkey",
+      "icon": "🦃",
+      "label": "Roast the turkey",
+      "start": "15:30",
+      "end": "18:30",
+      "minutes": 180,
+      "uses": [
+        "oven"
+      ],
+      "oven": 1,
+      "ovenTempF": 325,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "stuffing.prep",
+      "dishId": "stuffing",
+      "dishName": "Sourdough Stuffing",
+      "icon": "🍞",
+      "label": "Toss bread, broth & herbs",
+      "start": "17:50",
+      "end": "18:05",
+      "minutes": 15,
+      "uses": [
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "stuffing.bake",
+      "dishId": "stuffing",
+      "dishName": "Sourdough Stuffing",
+      "icon": "🍞",
+      "label": "Bake the stuffing",
+      "start": "18:05",
+      "end": "19:00",
+      "minutes": 55,
+      "uses": [
+        "oven"
+      ],
+      "oven": 1,
+      "ovenTempF": 325,
+      "usedAlt": true,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "mashed_potatoes.peel",
+      "dishId": "mashed_potatoes",
+      "dishName": "Mashed Potatoes",
+      "icon": "🥔",
+      "label": "Peel & cube the potatoes",
+      "start": "18:15",
+      "end": "18:30",
+      "minutes": 15,
+      "uses": [
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "green_beans.trim",
+      "dishId": "green_beans",
+      "dishName": "Green Beans Almondine",
+      "icon": "🫛",
+      "label": "Trim the green beans",
+      "start": "18:27",
+      "end": "18:37",
+      "minutes": 10,
+      "uses": [
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "mashed_potatoes.boil",
+      "dishId": "mashed_potatoes",
+      "dishName": "Mashed Potatoes",
+      "icon": "🥔",
+      "label": "Boil the potatoes",
+      "start": "18:30",
+      "end": "18:50",
+      "minutes": 20,
+      "uses": [
+        "burner"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "turkey.rest",
+      "dishId": "turkey",
+      "dishName": "Roast Turkey",
+      "icon": "🦃",
+      "label": "Rest the turkey under foil",
+      "start": "18:30",
+      "end": "19:00",
+      "minutes": 30,
+      "uses": [],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "green_beans.blanch",
+      "dishId": "green_beans",
+      "dishName": "Green Beans Almondine",
+      "icon": "🫛",
+      "label": "Blanch the green beans",
+      "start": "18:37",
+      "end": "18:42",
+      "minutes": 5,
+      "uses": [
+        "burner"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "green_beans.saute",
+      "dishId": "green_beans",
+      "dishName": "Green Beans Almondine",
+      "icon": "🫛",
+      "label": "Sauté with toasted almonds",
+      "start": "18:42",
+      "end": "18:50",
+      "minutes": 8,
+      "uses": [
+        "burner",
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "rolls.bake",
+      "dishId": "rolls",
+      "dishName": "Dinner Rolls",
+      "icon": "🥖",
+      "label": "Warm the dinner rolls",
+      "start": "18:42",
+      "end": "19:00",
+      "minutes": 18,
+      "uses": [
+        "oven"
+      ],
+      "oven": 1,
+      "ovenTempF": 325,
+      "usedAlt": true,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "gravy.make",
+      "dishId": "gravy",
+      "dishName": "Pan Gravy",
+      "icon": "🥣",
+      "label": "Whisk gravy from the drippings",
+      "start": "18:45",
+      "end": "19:00",
+      "minutes": 15,
+      "uses": [
+        "burner",
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    },
+    {
+      "stepId": "mashed_potatoes.mash",
+      "dishId": "mashed_potatoes",
+      "dishName": "Mashed Potatoes",
+      "icon": "🥔",
+      "label": "Mash with butter & cream",
+      "start": "18:50",
+      "end": "19:00",
+      "minutes": 10,
+      "uses": [
+        "hands"
+      ],
+      "oven": null,
+      "ovenTempF": null,
+      "usedAlt": false,
+      "status": "upcoming"
+    }
+  ],
+  "next": [
+    "turkey.prep",
+    "turkey.roast",
+    "stuffing.prep"
+  ],
+  "conflict": null,
+  "changes": []
+}

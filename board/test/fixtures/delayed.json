@@ -1,0 +1,45 @@
+{
+  "serveAt": "19:20",
+  "originalServeAt": "19:00",
+  "now": "18:20",
+  "demoClock": true,
+  "option": "share-oven",
+  "revision": 2,
+  "kitchen": { "ovens": 1, "ovenRacks": 2, "burners": 4, "cooks": 2, "ovenSwitchMinutes": 10 },
+  "dishes": [
+    { "id": "turkey", "name": "Roast Turkey", "icon": "🦃", "readyAt": "19:20", "waitMinutes": 0, "holdMinutes": 30, "ok": true },
+    { "id": "stuffing", "name": "Sourdough Stuffing", "icon": "🍞", "readyAt": "19:00", "waitMinutes": 20, "holdMinutes": 20, "ok": true },
+    { "id": "mashed_potatoes", "name": "Mashed Potatoes", "icon": "🥔", "readyAt": "19:20", "waitMinutes": 0, "holdMinutes": 30, "ok": true },
+    { "id": "green_beans", "name": "Green Beans Almondine", "icon": "🫛", "readyAt": "19:10", "waitMinutes": 10, "holdMinutes": 10, "ok": true },
+    { "id": "gravy", "name": "Pan Gravy", "icon": "🥣", "readyAt": "19:20", "waitMinutes": 0, "holdMinutes": 15, "ok": true },
+    { "id": "rolls", "name": "Dinner Rolls", "icon": "🥖", "readyAt": "19:20", "waitMinutes": 0, "holdMinutes": 15, "ok": true }
+  ],
+  "steps": [
+    { "stepId": "turkey.prep", "dishId": "turkey", "dishName": "Roast Turkey", "icon": "🦃", "label": "Season & truss the turkey", "start": "15:10", "end": "15:30", "minutes": 20, "uses": ["hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "done" },
+    { "stepId": "turkey.roast", "dishId": "turkey", "dishName": "Roast Turkey", "icon": "🦃", "label": "Roast the turkey", "start": "15:30", "end": "18:50", "minutes": 200, "uses": ["oven"], "oven": 1, "ovenTempF": 325, "usedAlt": false, "status": "active" },
+    { "stepId": "stuffing.prep", "dishId": "stuffing", "dishName": "Sourdough Stuffing", "icon": "🍞", "label": "Toss bread, broth & herbs", "start": "17:50", "end": "18:05", "minutes": 15, "uses": ["hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "done" },
+    { "stepId": "stuffing.bake", "dishId": "stuffing", "dishName": "Sourdough Stuffing", "icon": "🍞", "label": "Bake the stuffing", "start": "18:05", "end": "19:00", "minutes": 55, "uses": ["oven"], "oven": 1, "ovenTempF": 325, "usedAlt": true, "status": "active" },
+    { "stepId": "mashed_potatoes.peel", "dishId": "mashed_potatoes", "dishName": "Mashed Potatoes", "icon": "🥔", "label": "Peel & cube the potatoes", "start": "18:15", "end": "18:30", "minutes": 15, "uses": ["hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "active" },
+    { "stepId": "green_beans.trim", "dishId": "green_beans", "dishName": "Green Beans Almondine", "icon": "🫛", "label": "Trim the green beans", "start": "18:47", "end": "18:57", "minutes": 10, "uses": ["hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "mashed_potatoes.boil", "dishId": "mashed_potatoes", "dishName": "Mashed Potatoes", "icon": "🥔", "label": "Boil the potatoes", "start": "18:50", "end": "19:10", "minutes": 20, "uses": ["burner"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "turkey.rest", "dishId": "turkey", "dishName": "Roast Turkey", "icon": "🦃", "label": "Rest the turkey under foil", "start": "18:50", "end": "19:20", "minutes": 30, "uses": [], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "green_beans.blanch", "dishId": "green_beans", "dishName": "Green Beans Almondine", "icon": "🫛", "label": "Blanch the green beans", "start": "18:57", "end": "19:02", "minutes": 5, "uses": ["burner"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "green_beans.saute", "dishId": "green_beans", "dishName": "Green Beans Almondine", "icon": "🫛", "label": "Sauté with toasted almonds", "start": "19:02", "end": "19:10", "minutes": 8, "uses": ["burner", "hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "rolls.bake", "dishId": "rolls", "dishName": "Dinner Rolls", "icon": "🥖", "label": "Warm the dinner rolls", "start": "19:02", "end": "19:20", "minutes": 18, "uses": ["oven"], "oven": 1, "ovenTempF": 325, "usedAlt": true, "status": "upcoming" },
+    { "stepId": "gravy.make", "dishId": "gravy", "dishName": "Pan Gravy", "icon": "🥣", "label": "Whisk gravy from the drippings", "start": "19:05", "end": "19:20", "minutes": 15, "uses": ["burner", "hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" },
+    { "stepId": "mashed_potatoes.mash", "dishId": "mashed_potatoes", "dishName": "Mashed Potatoes", "icon": "🥔", "label": "Mash with butter & cream", "start": "19:10", "end": "19:20", "minutes": 10, "uses": ["hands"], "oven": null, "ovenTempF": null, "usedAlt": false, "status": "upcoming" }
+  ],
+  "next": ["green_beans.trim", "mashed_potatoes.boil", "turkey.rest"],
+  "conflict": null,
+  "changes": [
+    { "stepId": "turkey.roast", "label": "Roast the turkey", "from": "15:30–18:30", "to": "15:30–18:50" },
+    { "stepId": "green_beans.trim", "label": "Trim the green beans", "from": "18:27–18:37", "to": "18:47–18:57" },
+    { "stepId": "mashed_potatoes.boil", "label": "Boil the potatoes", "from": "18:30–18:50", "to": "18:50–19:10" },
+    { "stepId": "turkey.rest", "label": "Rest the turkey under foil", "from": "18:30–19:00", "to": "18:50–19:20" },
+    { "stepId": "green_beans.blanch", "label": "Blanch the green beans", "from": "18:37–18:42", "to": "18:57–19:02" },
+    { "stepId": "green_beans.saute", "label": "Sauté with toasted almonds", "from": "18:42–18:50", "to": "19:02–19:10" },
+    { "stepId": "rolls.bake", "label": "Warm the dinner rolls", "from": "18:42–19:00", "to": "19:02–19:20" },
+    { "stepId": "gravy.make", "label": "Whisk gravy from the drippings", "from": "18:45–19:00", "to": "19:05–19:20" },
+    { "stepId": "mashed_potatoes.mash", "label": "Mash with butter & cream", "from": "18:50–19:00", "to": "19:10–19:20" }
+  ]
+}

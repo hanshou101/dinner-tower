@@ -1,0 +1,105 @@
+[
+  {
+    "id": "turkey",
+    "name": "Roast Turkey",
+    "icon": "🦃",
+    "holdMinutes": 30,
+    "steps": [
+      { "id": "turkey.prep", "label": "Season & truss the turkey", "minutes": 20, "uses": ["hands"] },
+      { "id": "turkey.roast", "label": "Roast the turkey", "minutes": 180, "uses": ["oven"], "ovenTempF": 325, "after": ["turkey.prep"] },
+      { "id": "turkey.rest", "label": "Rest the turkey under foil", "minutes": 30, "uses": [], "after": ["turkey.roast"] }
+    ]
+  },
+  {
+    "id": "stuffing",
+    "name": "Sourdough Stuffing",
+    "icon": "🍞",
+    "holdMinutes": 20,
+    "steps": [
+      { "id": "stuffing.prep", "label": "Toss bread, broth & herbs", "minutes": 15, "uses": ["hands"] },
+      { "id": "stuffing.bake", "label": "Bake the stuffing", "minutes": 45, "uses": ["oven"], "ovenTempF": 350, "alt": { "ovenTempF": 325, "minutes": 55 }, "after": ["stuffing.prep"] }
+    ]
+  },
+  {
+    "id": "mashed_potatoes",
+    "name": "Mashed Potatoes",
+    "icon": "🥔",
+    "holdMinutes": 30,
+    "steps": [
+      { "id": "mashed_potatoes.peel", "label": "Peel & cube the potatoes", "minutes": 15, "uses": ["hands"] },
+      { "id": "mashed_potatoes.boil", "label": "Boil the potatoes", "minutes": 20, "uses": ["burner"], "after": ["mashed_potatoes.peel"] },
+      { "id": "mashed_potatoes.mash", "label": "Mash with butter & cream", "minutes": 10, "uses": ["hands"], "after": ["mashed_potatoes.boil"] }
+    ]
+  },
+  {
+    "id": "green_beans",
+    "name": "Green Beans Almondine",
+    "icon": "🫛",
+    "holdMinutes": 10,
+    "steps": [
+      { "id": "green_beans.trim", "label": "Trim the green beans", "minutes": 10, "uses": ["hands"] },
+      { "id": "green_beans.blanch", "label": "Blanch the green beans", "minutes": 5, "uses": ["burner"], "after": ["green_beans.trim"] },
+      { "id": "green_beans.saute", "label": "Sauté with toasted almonds", "minutes": 8, "uses": ["burner", "hands"], "after": ["green_beans.blanch"] }
+    ]
+  },
+  {
+    "id": "gravy",
+    "name": "Pan Gravy",
+    "icon": "🥣",
+    "holdMinutes": 15,
+    "steps": [
+      { "id": "gravy.make", "label": "Whisk gravy from the drippings", "minutes": 15, "uses": ["burner", "hands"], "after": ["turkey.roast"] }
+    ]
+  },
+  {
+    "id": "rolls",
+    "name": "Dinner Rolls",
+    "icon": "🥖",
+    "holdMinutes": 15,
+    "steps": [
+      { "id": "rolls.bake", "label": "Warm the dinner rolls", "minutes": 12, "uses": ["oven"], "ovenTempF": 400, "alt": { "ovenTempF": 325, "minutes": 18 } }
+    ]
+  },
+  {
+    "id": "pumpkin_pie",
+    "name": "Pumpkin Pie",
+    "icon": "🥧",
+    "holdMinutes": 240,
+    "steps": [
+      { "id": "pumpkin_pie.prep", "label": "Whisk the filling & fill the crust", "minutes": 15, "uses": ["hands"] },
+      { "id": "pumpkin_pie.bake", "label": "Bake the pumpkin pie", "minutes": 55, "uses": ["oven"], "ovenTempF": 350, "alt": { "ovenTempF": 325, "minutes": 65 }, "after": ["pumpkin_pie.prep"] },
+      { "id": "pumpkin_pie.cool", "label": "Cool the pie", "minutes": 120, "uses": [], "after": ["pumpkin_pie.bake"] }
+    ]
+  },
+  {
+    "id": "salmon",
+    "name": "Garlic Butter Salmon",
+    "icon": "🐟",
+    "holdMinutes": 5,
+    "steps": [
+      { "id": "salmon.prep", "label": "Season the salmon", "minutes": 5, "uses": ["hands"] },
+      { "id": "salmon.roast", "label": "Roast the salmon", "minutes": 12, "uses": ["oven"], "ovenTempF": 400, "after": ["salmon.prep"] }
+    ]
+  },
+  {
+    "id": "rice",
+    "name": "Jasmine Rice",
+    "icon": "🍚",
+    "holdMinutes": 20,
+    "steps": [
+      { "id": "rice.rinse", "label": "Rinse the rice", "minutes": 5, "uses": ["hands"] },
+      { "id": "rice.simmer", "label": "Simmer the rice", "minutes": 18, "uses": ["burner"], "after": ["rice.rinse"] },
+      { "id": "rice.rest", "label": "Rest the rice, lid on", "minutes": 10, "uses": [], "after": ["rice.simmer"] }
+    ]
+  },
+  {
+    "id": "broccoli",
+    "name": "Roasted Broccoli",
+    "icon": "🥦",
+    "holdMinutes": 10,
+    "steps": [
+      { "id": "broccoli.prep", "label": "Cut & oil the broccoli", "minutes": 8, "uses": ["hands"] },
+      { "id": "broccoli.roast", "label": "Roast the broccoli", "minutes": 20, "uses": ["oven"], "ovenTempF": 425, "alt": { "ovenTempF": 400, "minutes": 24 }, "after": ["broccoli.prep"] }
+    ]
+  }
+]

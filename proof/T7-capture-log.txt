@@ -1,0 +1,12 @@
+BADGE dinner-tower 1.0.0 · MCP 2025-11-25 · Streamable HTTP · session a5887a16
+TOOLS 6 → list_dishes, get_kitchen, update_kitchen, plan_dinner, whats_next, report_delay
+PRESETS Plan Thanksgiving for 7 PM | What's next? | Turkey +20 min | Show kitchen
+AGENT input disabled=true
+AGENT hint=Set LLM_BASE_URL / LLM_API_KEY / LLM_MODEL in .env to enable agent mode
+ELICIT message=Your oven can only hold one temperature at a time, so Sourdough Stuffing would finish early and wait too long. How should I plan it?
+ELICIT options=Share the oven: bake Sourdough Stuffing and Dinner Rolls at 325°F alongside the rest — everything lands at 7:00 PM. | Keep recipe temperatures: Sourdough Stuffing is ready at 3:20 PM and waits 3 h 40 min.
+COMPARE 1300: 13 rows, 0 differences, serve board=7:00 PM structured=19:00
+COMPARE 1820: 13 rows, 0 differences, serve board=7:00 PM structured=19:00
+BOARD +10 buttons=3
+COMPARE after-plus10: 13 rows, 0 differences, serve board=7:10 PM structured=19:10
+TOOLCALLS 3 → plan_dinner preset {"dishes":["turkey","stuffing","mashed_potatoes","green_beans","gravy",… 115 ms ✓ Dinner lands at 7:00 PM — 6 dishes, 13  || whats_next clock {} 4 ms ✓ Dinner lands at 7:00 PM — 6 dishes, 13 steps, share-oven plan. Next up: Trim the green beans at 6:27 PM; Boil the || report_delay app {"target":"turkey.roast","minutes":10} 4 ms ✓ Dinner lands at 7:10 PM — 6 dishes, 13 steps, share-oven plan (moved from 7:0

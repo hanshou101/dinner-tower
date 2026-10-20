@@ -1,0 +1,24 @@
+# 依赖与构建
+node_modules/
+.venv/
+venv/
+__pycache__/
+dist/
+build/
+.next/
+# 密钥
+.env
+.env.*
+!.env.example
+# 大文件：视频走 Release 附件或人工上传
+*.mp4
+*.mov
+*.webm
+# 杂项
+.DS_Store
+*.log
+# Dinner Tower 运行时与测试产物
+server/data/
+test-results/
+playwright-report/
+scripts/demo/out/
