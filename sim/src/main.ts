@@ -1,8 +1,15 @@
 /**
  * Dinner Tower — Echo-style simulator page.
  *
- * Left: an Echo Show style screen (idle clock or the mounted MCP App).
- * Right: conversation + tool-call log, quick actions, tool list, tool console.
+ * Left: an Echo Show style screen (idle clock, the mounted MCP App, or the
+ * elicitation card that the server asks for mid-call).
+ * Right: the conversation — user and Alexa bubbles, plus the tool capsule
+ * under each answer.
+ *
+ * Demo mode is the default: no version string, no session id, no model name,
+ * no raw JSON. Everything developer-facing sits behind `?dev=1`, which opens
+ * the Developer panel and restores the tool log.
+ *
  * All MCP traffic is real: this page is the MCP client and the MCP Apps host.
  */
 import "./styles.css";
@@ -19,6 +26,22 @@ import { connectMcp, withHostCall, type ElicitResultLike, type McpConnection } f
 import { isPresetAvailable, PRESETS } from "./presets";
 import type { CallSource, SimConfig, ToolCallRecord } from "./types";
 
+/** `?dev=1` — the only way to see the Developer panel. */
+const DEV = new URLSearchParams(window.location.search).has("dev");
+
+/** Three things a person can actually say, used as the idle-screen guidance. */
+const IDLE_EXAMPLES: readonly { label: string; say: string }[] = [
+  {
+    label: "Plan Thanksgiving for 7 PM",
+    say: "Alexa, I'm hosting Thanksgiving at 7. Turkey, stuffing, mashed potatoes, green beans, gravy and rolls.",
+  },
+  { label: "What's next?", say: "Alexa, what's next?" },
+  { label: "Turkey needs 20 more minutes", say: "Alexa, the turkey needs twenty more minutes" },
+];
+
+/** How many exchanges the conversation column keeps on screen. */
+const VISIBLE_TURNS = 3;
+
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`Missing element #${id}`);
@@ -26,10 +49,14 @@ const $ = <T extends HTMLElement>(id: string): T => {
 };
 
 const els = {
+  stage: $("stage"),
   badge: $("badge"),
   idle: $("idle"),
   idleTime: $("idle-time"),
+  idleChips: $("idle-chips"),
   appView: $("app-view"),
+  serveFlash: $("serve-flash"),
+  serveFlashTime: $("serve-flash-time"),
   elicitation: $("elicitation"),
   elicitationMessage: $("elicitation-message"),
   elicitationFields: $("elicitation-fields"),
@@ -43,12 +70,14 @@ const els = {
   consoleCall: $<HTMLButtonElement>("console-call"),
   consoleError: $("console-error"),
   clockControl: $("clock-control"),
+  clockDev: $("clock-dev"),
+  clockValue: $("clock-value"),
   clockInput: $<HTMLInputElement>("clock-input"),
   clockSet: $<HTMLButtonElement>("clock-set"),
   lightbar: $("lightbar"),
   agentPanel: $("agent-panel"),
   agentModel: $("agent-model"),
-  agentForm: $<HTMLFormElement>("agent-form"),
+  agentForm: $<HTMLFormElement>("agent-panel"),
   agentInput: $<HTMLInputElement>("agent-input"),
   agentSend: $<HTMLButtonElement>("agent-send"),
   agentHint: $("agent-hint"),
@@ -60,6 +89,8 @@ let host: AppHost | undefined;
 let hasPlan = false;
 let demoClock: string | undefined;
 let busyDepth = 0;
+let lastServeAt: string | undefined;
+let serveFlashTimer: number | undefined;
 
 let config: SimConfig;
 let agentEnabled = false;
@@ -70,22 +101,102 @@ const speaker = createSpeaker();
 
 // ---------------------------------------------------------------- feed
 
+/** Turns started by the person; the last VISIBLE_TURNS of them stay on screen. */
+const turns: HTMLElement[] = [];
+let currentTurn: HTMLElement | undefined;
+
 function scrollFeed(): void {
   els.feed.scrollTop = els.feed.scrollHeight;
 }
 
-function addBubble(role: "user" | "alexa" | "system", text: string): void {
+function pruneTurns(): void {
+  while (turns.length > VISIBLE_TURNS) {
+    const oldest = turns.shift();
+    if (oldest) oldest.remove();
+  }
+}
+
+/**
+ * Keep whole turns only: a conversation column that cuts a bubble in half reads
+ * as a layout bug, so drop the oldest turn while the column still overflows.
+ */
+function fitFeed(): void {
+  while (els.feed.scrollHeight > els.feed.clientHeight + 1 && els.feed.children.length > 1) {
+    const oldest = els.feed.firstElementChild as HTMLElement | null;
+    if (!oldest) break;
+    const index = turns.indexOf(oldest);
+    if (index >= 0) turns.splice(index, 1);
+    if (currentTurn === oldest) currentTurn = undefined;
+    oldest.remove();
+  }
+}
+
+/** The onboarding line is not part of the conversation once someone speaks. */
+function dropPlaceholder(): void {
+  const placeholder = els.feed.querySelector<HTMLElement>('.turn[data-placeholder="true"]');
+  if (!placeholder) return;
+  if (currentTurn === placeholder) currentTurn = undefined;
+  placeholder.remove();
+}
+
+function startTurn(role: "user" | "alexa" | "system"): HTMLElement {
+  const turn = document.createElement("div");
+  turn.className = "turn";
+  turn.dataset.role = role;
+  if (role === "user") dropPlaceholder();
+  els.feed.append(turn);
+  if (role === "user") {
+    turns.push(turn);
+    pruneTurns();
+    currentTurn = turn;
+  } else if (!currentTurn) {
+    currentTurn = turn;
+  }
+  return turn;
+}
+
+function turnFor(role: "user" | "alexa" | "system"): HTMLElement {
+  return role === "user" ? startTurn("user") : (currentTurn ?? startTurn(role));
+}
+
+function addBubble(role: "user" | "alexa" | "system", text: string): HTMLElement | undefined {
+  // System cards are developer information: they name tools, endpoints and
+  // errors. They only exist in the Developer view.
+  if (role === "system" && !DEV) return undefined;
+
+  const turn = turnFor(role);
   const bubble = document.createElement("div");
   bubble.className = "bubble";
   bubble.dataset.role = role;
   if (role === "user" || role === "alexa") bubble.dataset.testid = "utterance";
+  bubble.textContent = text;
+  turn.append(bubble);
 
-  const who = document.createElement("span");
-  who.className = "who";
-  who.textContent = role === "user" ? "You" : role === "alexa" ? "Alexa" : "System";
-  bubble.append(who, document.createTextNode(text));
-  els.feed.append(bubble);
+  if (role === "alexa") attachCapsules(turn);
+  fitFeed();
   scrollFeed();
+  return bubble;
+}
+
+/**
+ * Move the tool calls that produced this answer under the answer itself.
+ * Re-appending the row keeps it last, so an elicitation card that arrives
+ * mid-call never leaves the capsule stranded above the spoken reply.
+ */
+function attachCapsules(turn: HTMLElement): void {
+  if (DEV) return;
+  let row = turn.querySelector<HTMLElement>(".capsule-row");
+  const loose = Array.from(turn.querySelectorAll<HTMLElement>(".entry:not(.in-capsules)"));
+  if (!row) {
+    if (loose.length === 0) return;
+    row = document.createElement("div");
+    row.className = "capsule-row";
+  }
+  for (const entry of loose) {
+    entry.classList.add("in-capsules");
+    row.append(entry);
+  }
+  turn.append(row);
 }
 
 const recordElements = new WeakMap<ToolCallRecord, HTMLElement>();
@@ -119,6 +230,9 @@ const logger = {
     entry.dataset.status = "running";
     entry.dataset.testid = "tool-call";
     entry.dataset.source = source;
+    // Demo mode: a capsule ("⚙ plan_dinner · 6 ms") that ends up under the
+    // answer. Developer mode: the full record with the raw JSON below.
+    if (!DEV) entry.dataset.compact = "true";
 
     const head = document.createElement("div");
     head.className = "entry-head";
@@ -157,7 +271,18 @@ const logger = {
     detail.append(summary, pre);
 
     entry.append(head, textEl, detail);
-    els.feed.append(entry);
+    if (!DEV && source === "app") {
+      // The board calls the server itself; there is no reply to hang the
+      // capsule under, so give it its own row at the bottom of the column.
+      const row = document.createElement("div");
+      row.className = "capsule-row";
+      row.dataset.standalone = "true";
+      els.feed.append(row);
+      row.append(entry);
+      entry.classList.add("in-capsules");
+    } else {
+      (currentTurn ?? els.feed).append(entry);
+    }
     scrollFeed();
 
     recordElements.set(record, entry);
@@ -197,7 +322,12 @@ function setEntryOutcome(
   mark: string,
 ): void {
   const msEl = entry.querySelector<HTMLElement>(".entry-ms");
-  if (msEl) msEl.textContent = `${Math.round(durationMs)} ms`;
+  // A call that waits on an elicitation card can run for seconds; "13.6 s"
+  // reads better than "13610 ms" and is still the same measurement.
+  if (msEl) {
+    msEl.textContent =
+      durationMs >= 1000 ? `${(durationMs / 1000).toFixed(1)} s` : `${Math.round(durationMs)} ms`;
+  }
   const statusEl = entry.querySelector<HTMLElement>(".entry-status");
   if (statusEl) statusEl.textContent = mark;
 
@@ -375,6 +505,7 @@ async function runTool(
     )) as CallToolResult;
     logger.finish(record, result, performance.now() - startedAt);
     await presentResult(tool, args, result);
+    notePlan(result);
     if (name === "plan_dinner" && !result.isError) hasPlan = true;
   } catch (error) {
     logger.fail(record, error, performance.now() - startedAt);
@@ -399,15 +530,17 @@ function applyAgentConfig(): void {
   els.agentPanel.dataset.enabled = agentEnabled ? "true" : "false";
 
   if (agentEnabled) {
-    els.agentModel.textContent = config.agent?.model ?? "";
+    // The model name is developer information — only the Developer panel
+    // shows it. Demo mode keeps the header clean.
+    els.agentModel.textContent = DEV ? (config.agent?.model ?? "") : "";
     els.agentHint.hidden = true;
   } else {
     // Honest state: no endpoint, so the input stays disabled with the reason
-    // from SPEC §6.5. Direct mode (the chips below) keeps working.
+    // from SPEC §6.5. Direct mode (the chips) keeps working.
     els.agentModel.textContent = "";
-    els.agentInput.placeholder = AGENT_DISABLED_MESSAGE;
+    els.agentInput.placeholder = DEV ? AGENT_DISABLED_MESSAGE : "Say something to Alexa…";
     els.agentHint.textContent = AGENT_DISABLED_MESSAGE;
-    els.agentHint.hidden = false;
+    els.agentHint.hidden = !DEV;
   }
 
   els.agentInput.disabled = !agentEnabled;
@@ -482,6 +615,7 @@ async function agentCallTool(
       connection!.client.callTool({ name, arguments: args }),
     )) as CallToolResult;
     logger.finish(record, result, performance.now() - startedAt);
+    notePlan(result);
     if (name === "plan_dinner" && !result.isError) hasPlan = true;
     await mountAgentUi(tool, args, result);
     return result;
@@ -617,12 +751,67 @@ function formatClock(hhmm: string): string {
 }
 
 function updateIdleClock(): void {
-  if (!els.idle.hidden) {
-    const time = demoClock
-      ? formatClock(demoClock)
-      : new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    els.idleTime.textContent = time;
-  }
+  const time = demoClock
+    ? formatClock(demoClock)
+    : new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  if (!els.idle.hidden) els.idleTime.textContent = time;
+  if (!els.clockControl.hidden) els.clockValue.textContent = time;
+}
+
+/**
+ * The signature moment: the plan came back with a different serve time, so the
+ * new time pops once over the stage. The board itself does the row shuffle.
+ */
+function notePlan(result: CallToolResult): void {
+  if (result.isError) return;
+  const serveAt = (result as { structuredContent?: { serveAt?: unknown } }).structuredContent?.serveAt;
+  if (typeof serveAt !== "string") return;
+  if (lastServeAt !== undefined && serveAt !== lastServeAt) flashServe(serveAt);
+  lastServeAt = serveAt;
+}
+
+function flashServe(hhmm: string): void {
+  window.clearTimeout(serveFlashTimer);
+  els.serveFlashTime.textContent = formatClock(hhmm);
+  els.serveFlash.hidden = true;
+  // Restart the pop animation from the top.
+  void els.serveFlash.offsetWidth;
+  els.serveFlash.hidden = false;
+  serveFlashTimer = window.setTimeout(() => {
+    els.serveFlash.hidden = true;
+  }, 3_200);
+}
+
+/** One human sentence instead of a stack trace, on the screen itself. */
+function showFatal(message: string): void {
+  els.idleTime.textContent = "--:--";
+  const hint = els.idle.querySelector<HTMLElement>(".idle-hint");
+  if (hint) hint.textContent = message;
+  els.idleChips.replaceChildren();
+}
+
+/** Idle-screen guidance: three real things a person can say. */
+function renderIdleExamples(): void {
+  const fallback = ["plan", "next", "delay"];
+  els.idleChips.replaceChildren();
+  IDLE_EXAMPLES.forEach((example, index) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "idle-chip";
+    chip.dataset.testid = "example-chip";
+    chip.textContent = example.label;
+    chip.addEventListener("click", () => {
+      if (agentEnabled) {
+        void sendAgentTurn(example.say);
+        return;
+      }
+      const preset = PRESETS.find((candidate) => candidate.id === fallback[index]);
+      if (preset && connection?.tools.some((tool) => tool.name === preset.tool)) {
+        void runTool(preset.tool, preset.args, "preset", example.say);
+      }
+    });
+    els.idleChips.append(chip);
+  });
 }
 
 // ---------------------------------------------------------------- demo clock
@@ -640,6 +829,7 @@ async function initDemoClock(): Promise<void> {
   }
 
   els.clockControl.hidden = false;
+  els.clockDev.hidden = false;
   if (current) {
     demoClock = current;
     els.clockInput.value = current;
@@ -697,6 +887,9 @@ function wireConsole(): void {
 }
 
 async function boot(): Promise<void> {
+  els.stage.dataset.dev = DEV ? "true" : "false";
+  document.getElementById("dev-panel")!.hidden = !DEV;
+  renderIdleExamples();
   els.badge.dataset.state = "connecting";
   setInterval(updateIdleClock, 1000);
 
@@ -707,6 +900,7 @@ async function boot(): Promise<void> {
   } catch (error) {
     els.badge.dataset.state = "error";
     els.badge.textContent = `Simulator server error · ${error instanceof Error ? error.message : String(error)}`;
+    showFatal("Alexa can't reach the kitchen right now.");
     return;
   }
 
@@ -719,6 +913,7 @@ async function boot(): Promise<void> {
   } catch (error) {
     els.badge.dataset.state = "error";
     els.badge.textContent = `MCP server unreachable · ${config.mcpUrl}`;
+    showFatal("Alexa can't reach the kitchen right now.");
     addBubble(
       "system",
       `Could not connect to ${config.mcpUrl}: ${error instanceof Error ? error.message : String(error)}`,
@@ -750,6 +945,16 @@ async function boot(): Promise<void> {
 
   if (connection.instructions) {
     addBubble("system", connection.instructions);
+  }
+
+  // An empty column reads as an unfinished screen: give it one honest line so
+  // the person knows the right-hand side is a conversation, not a blank panel.
+  if (!DEV) {
+    const greeting = addBubble(
+      "alexa",
+      "I'll keep the board in sync. Ask me to plan dinner, or tap an example on the screen.",
+    );
+    greeting?.closest<HTMLElement>(".turn")?.setAttribute("data-placeholder", "true");
   }
 }
 

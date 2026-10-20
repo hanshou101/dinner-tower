@@ -43,7 +43,9 @@ test("renders the share-oven plan for a 7:00 PM serve", async ({ page }) => {
 
   const turkey = board.locator('[data-step-id="turkey.roast"]');
   await expect(turkey.locator(".col-time")).toHaveText("3:30 PM");
-  await expect(turkey.locator(".dish-icon")).toHaveText("🦃");
+  // The dish marker is a fixed colour dot, not the server's emoji.
+  await expect(turkey.locator(".dish-icon")).toHaveText("");
+  await expect(turkey.locator(".dish-icon")).toHaveCSS("background-color", "rgb(217, 160, 91)");
   await expect(turkey.locator(".dish-name")).toHaveText("Roast Turkey");
   await expect(turkey.locator(".col-step")).toHaveText("Roast the turkey");
   await expect(turkey.locator(".col-station")).toHaveText("OVEN 1 · 325°F");

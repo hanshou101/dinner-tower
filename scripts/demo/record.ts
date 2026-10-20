@@ -258,7 +258,9 @@ class Recorder {
   async speak(role: Exclude<Role, "caption">, text: string): Promise<void> {
     const clip = this.voices.get(role, text);
     const startMs = this.now();
-    await this.showSub(role, text);
+    // Subtitles carry the narrator only: dialogue is already on screen in the
+    // conversation column, so repeating it under the device adds clutter (docs/07-UI.md §4).
+    if (role === "narrator") await this.showSub(role, text);
     this.lines.push({
       index: this.lines.length + 1,
       role,
@@ -386,6 +388,20 @@ async function tap(page: Page, target: Locator): Promise<void> {
   await page.evaluate(() => {
     (window as unknown as { __demo?: { hideCursor(): void } }).__demo?.hideCursor();
   });
+}
+
+/**
+ * The board is a split-flap display: after a replan every re-timed row plays a
+ * 400 ms flip, so a still taken too early catches half-swapped numerals. Wait
+ * for the iframe's animations to drain, then confirm they stayed drained.
+ */
+async function waitForBoardSettled(page: Page, quietMs = 320): Promise<void> {
+  const root = boardFrame(page).locator("html");
+  const running = (): Promise<number> =>
+    root.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
+  await waitFor(async () => (await running()) === 0, 20_000, "the board flips to settle");
+  await sleep(quietMs);
+  await waitFor(async () => (await running()) === 0, 20_000, "the board to stay settled");
 }
 
 async function waitForBoard(page: Page, minRows = 10): Promise<void> {
@@ -669,6 +685,7 @@ async function main(): Promise<void> {
     await rec.scene("plan-lands", "The departure board renders the plan", async () => {
       await waitForAgentIdle(page!);
       await waitForBoard(page!);
+      await waitForBoardSettled(page!);
       rec.mark("board-plan");
       const reply = await lastAlexaReply(page!);
       await rec.speak("alexa", reply);
@@ -688,6 +705,9 @@ async function main(): Promise<void> {
       await waitForToolCall(page!, "whats_next", true);
       await waitForAgentIdle(page!);
       await waitForBoard(page!);
+      // The plan just changed, so every re-timed row is mid-flip: wait for the
+      // reels to stop rather than guessing a delay.
+      await waitForBoardSettled(page!);
       rec.mark("new-session");
       const reply = await lastAlexaReply(page!);
       await rec.speak("alexa", reply);

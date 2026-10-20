@@ -12,7 +12,9 @@ import { expect, test } from "@playwright/test";
 const PROOF = resolve(process.cwd(), "..", "proof");
 
 test("AC-8: plan, 6:20 PM NOW row, +10 MIN, SERVE 7:10 PM", async ({ page }) => {
-  await page.goto("/");
+  // Demo mode is the product surface; the preset chips and the demo clock
+  // live in the Developer panel, which `?dev=1` opens.
+  await page.goto("/?dev=1");
   await expect(page.getByTestId("connection-badge")).toContainText("dinner-tower");
 
   // 1. Direct mode: plan the golden menu for 7:00 PM.

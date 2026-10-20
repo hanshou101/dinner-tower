@@ -124,7 +124,7 @@ test.describe("agent mode without an LLM endpoint", () => {
   test.skip(Boolean(process.env.LLM_API_KEY), "LLM_* is exported in this shell — the page is configured");
 
   test("input is disabled and states what to set, direct mode still works", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/?dev=1");
 
     const hint = "Set LLM_BASE_URL / LLM_API_KEY / LLM_MODEL in .env to enable agent mode";
     await expect(page.getByTestId("agent-input")).toBeDisabled();
@@ -215,7 +215,7 @@ test.describe("agent loop against the real server (scripted LLM)", () => {
   });
 
   test("one sentence → plan_dinner → elicitation → reply", async ({ page }) => {
-    await page.goto("http://127.0.0.1:8280/");
+    await page.goto("http://127.0.0.1:8280/?dev=1");
     await expect(page.getByTestId("connection-badge")).toContainText("dinner-tower 1.0.0");
     await expect(page.getByTestId("agent-model")).toHaveText("stub-model");
 
@@ -270,7 +270,7 @@ test.describe("agent loop against the real server (scripted LLM)", () => {
   });
 
   test("the reply is spoken only while the voice switch is on", async ({ page }) => {
-    await page.goto("http://127.0.0.1:8280/");
+    await page.goto("http://127.0.0.1:8280/?dev=1");
     await page.evaluate(() => {
       (window as unknown as { __spoken: string[] }).__spoken = [];
       const synth = {
@@ -344,7 +344,7 @@ test.describe("AC-10 with the configured LLM", () => {
 
   test("the model picks the golden menu and 19:00, then the board answers share-oven", async ({ page }) => {
     test.setTimeout(180_000);
-    await page.goto("http://127.0.0.1:8290/");
+    await page.goto("http://127.0.0.1:8290/?dev=1");
     await expect(page.getByTestId("agent-model")).toHaveText(llm.model!);
 
     await page.getByTestId("agent-input").fill(SENTENCE);

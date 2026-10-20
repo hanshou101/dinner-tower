@@ -265,7 +265,12 @@ interface PlanView {
 ### 6.5 Echo 風格模擬器（T3 宿主/直連 + T6 代理/語音）
 
 - `sim/server.ts`（Express）：`SIM_PORT`（預設 8080）提供頁面與 `POST /api/chat`；`SANDBOX_PORT`（預設 8081）提供沙箱代理頁（照抄 basic-host 的雙 iframe 沙箱模式，不同源）。`MCP_URL` 預設 `http://localhost:3001/mcp`。
-- 頁面 1280×720：左側 Echo Show 風格外框（16:10 螢幕區 ≈ 880×550）——空閒時顯示大時鐘與提示語，有 UI 結果時顯示 MCP App iframe；螢幕下方一條青色光條（說話/思考時動畫；不得使用 Amazon 標誌）；右側 380px 面板：對話氣泡 + 工具調用記錄（工具名、參數摘要、耗時、✓/✗，可展開 JSON）。頂部連接徽章：`dinner-tower 1.0.0 · MCP 2025-11-25 · Streamable HTTP · session 1a2b3c4d`。頁腳小字：`Simulated Alexa+ experience · unofficial demo`。
+- 頁面 1280×720（v1.6 起視覺規格以 `docs/07-UI.md` 第 4 節為準）。**預設是演示模式**：
+  - 頂欄 56px：左邊「Dinner Tower」字標加「for Alexa+」標籤；右邊一個「DEMO CLOCK」琥珀描邊膠囊。
+  - 左側：820px 的 Echo Show 風格設備框（螢幕 16:10）。空閒時顯示大時鐘、一行 Try 提示和三個示例說法；有 UI 結果時，螢幕裡就是 MCP App 出發看板。反問（elicitation）畫在設備螢幕裡。螢幕下方一條光條，說話或思考時有動畫；不得使用 Amazon 標誌。
+  - 右側：380px 對話欄，只顯示最近 3 輪的用戶與 Alexa 氣泡。每條 Alexa 回覆下面一顆灰色工具膠囊（工具名 · 耗時），不顯示 JSON。
+  - 頁腳小字：`Simulated Alexa+ experience · unofficial demo`。
+  - 開發者資訊只在 `?dev=1` 的 Developer 面板裡出現：連接徽章 `dinner-tower 1.0.0 · MCP 2025-11-25 · Streamable HTTP · session …`、代理模式與模型名、工具清單、工具控制台、原始 JSON、SYSTEM 卡。測試和錄製腳本需要這些元素時，打開 `?dev=1`。
 - MCP client（T3）：`@modelcontextprotocol/client` + Streamable HTTP；聲明能力 `elicitation: { form: {} }` 與 ext-apps 的 UI 擴展能力；`listTools` 後顯示；工具結果帶 `_meta.ui.resourceUri` → 讀資源 → AppBridge 渲染（`sendToolInput`、`sendToolResult`），App 發起的 `tools/call` 轉發到伺服器。
 - elicitation（T3）：收到 `elicitation/create` → 螢幕上覆蓋選擇卡（message + 每個選項一個大按鈕），並在對話欄記一條 Alexa 氣泡（message 原文）；點擊 → 回 `{action:"accept", content:{choice}}`；關閉 → `cancel`。對 `oneOf`、`enum` 兩種 schema 都要能渲染。
 - 直連模式（T3，無需 LLM）：預設動作晶片（真實 `tools/call`）：`Plan Thanksgiving for 7 PM`（plan_dinner 黃金菜單 19:00）、`What's next?`、`Turkey +20 min`（report_delay turkey 20）、`Show kitchen`；另有通用工具控制台（選工具、填 JSON、調用）。
@@ -332,3 +337,4 @@ interface PlanView {
 | 2026-10-20 | v1.3：閘 B 有條件通過。T8（AME-858）稽核 3 PASS / 3 FAIL，FAIL 全屬過程；測試先行偏差（T3、T6）接受、不返工 | 紅階段事後補不出真的；行為已由全綠的測試覆蓋，主控驗收時另有獨立探針複驗。教訓回流模板：PR 必附紅→綠輸出。複核寫在 `docs/03-PROCESS.md` 文末 |
 | 2026-10-20 | v1.4：T7（AME-857）的 FAIL-1（照 README 啟動後頁面 503：`dev.sh` 不建模擬器頁面，就緒探針又探錯了）由主控直接修，不重開 T6；閘 C 的產品部分（AC-1～AC-11）通過 | 修法只有幾行，T9 錄影要用到；主控已在全新 clone 上照 README 複驗，複核寫在 `docs/04-PROOF.md` 文末 |
 | 2026-10-20 | v1.5：公開方式改為「主控在最後從 main 做一份快照，建新的公開倉庫 `hanshou101/dinner-tower`（MIT）」，工作倉庫保持私有，T9 不改倉庫可見性（取代上面「提交前把倉庫轉公開」那一條）。`docs/friction/T6.md` 第一條改寫成中性描述 | 工作倉庫的 PR 歷史與過程文件含內部基礎設施細節（本機密鑰檔的位置、對內部中轉的探測），轉公開會連 PR diff 一起公開。私有倉庫加評審協作者也不行：邀請 7 天就過期，評審期卻在 11-09～11-20 |
+| 2026-10-20 | v1.6：頁面版式改成演示模式預設，開發者資訊收進 `?dev=1`；改用設備框，看板與反問卡都畫在螢幕裡，工具膠囊用灰色。視覺規格以 `docs/07-UI.md` 為準（AME-871，閘 D 的 D2 第 2 輪通過）。驗收條件不變，E2E 與錄製腳本改用 `?dev=1` 看開發者元素。第一個示例說法帶上整份菜單 | 用戶 2026-10-20 指出作品 UI 太醜（AME-777 評論 01a158ea），因此加了審美閘 D。主控實測：真模型收到不帶菜單的「plan Thanksgiving dinner for 7 PM」，會先反問菜單 |

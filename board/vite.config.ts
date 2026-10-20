@@ -17,6 +17,9 @@ export default defineConfig({
     target: "es2022",
     cssMinify: true,
     minify: true,
+    // The App is one HTML file injected into a sandboxed iframe: the woff2
+    // faces from design/fonts/ must travel inside it, not as sibling files.
+    assetsInlineLimit: 200_000,
     rollupOptions: {
       input: resolve(root, "board.html"),
     },

@@ -188,7 +188,7 @@ function encode(capture: string, audio: string, outFile: string, totalSec: numbe
     "-preset",
     "medium",
     "-crf",
-    "20",
+    "16",
     "-pix_fmt",
     "yuv420p",
     "-profile:v",

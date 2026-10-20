@@ -10,8 +10,11 @@ test.beforeAll(() => {
   mkdirSync(PROOF_DIR, { recursive: true });
 });
 
+// The badge, the tool list, the console and the raw tool log live in the
+// Developer panel (docs/07-UI.md §4): demo mode is the default, `?dev=1` is
+// how these assertions reach them.
 test("simulator is a real MCP client and MCP Apps host", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?dev=1");
 
   // --- connection badge: server name/version, negotiated protocol, session id
   const badge = page.getByTestId("connection-badge");
@@ -114,7 +117,7 @@ test("demo clock control shows up only when the server exposes /demo/clock", asy
   const enabled = await request.post("http://127.0.0.1:3201/__demo-clock/enable");
   expect(enabled.ok()).toBe(true);
 
-  await page.goto("/");
+  await page.goto("/?dev=1");
   await expect(page.getByTestId("connection-badge")).toContainText("fixture-tower 0.1.0");
 
   const clock = page.locator("#clock-control");

@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 /**
  * The recording overlay and the full-screen cards used by the demo video.
  *
@@ -22,16 +26,21 @@ export const INIT_SCRIPT = String.raw`
   if (window.__demo && window.__demo.version === 1) { window.__demo.ensure(); return; }
 
   const STYLE = ` + "`" + `
+    /* Narration only, and only over the stage: the conversation column is
+       part of the picture (docs/07-UI.md §4), so the bar stays inside the
+       device column and above the footer. */
     #demo-sub {
-      position: fixed; left: 0; right: 0; bottom: 26px; margin: 0 auto;
-      width: max-content; max-width: 1060px; padding: 9px 20px 10px; border-radius: 12px;
+      position: fixed; left: 30px; bottom: 24px;
+      width: 820px; margin: 0 auto; padding: 9px 20px 10px; border-radius: 12px;
       background: rgba(4, 10, 18, 0.86); color: #f7f3e8;
-      font: 500 21px/1.34 -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font: 500 21px/1.34 "Barlow", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-align: center; letter-spacing: 0.1px; z-index: 2147483647;
       opacity: 0; transition: opacity 140ms ease; pointer-events: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     }
     #demo-sub[data-visible="true"] { opacity: 1; }
+    /* Full-screen cards have no conversation column: centre the narration. */
+    body[data-card] #demo-sub { left: 110px; width: 1060px; }
     #demo-sub .who {
       color: #7fd1ff; font-weight: 700; font-size: 15px; letter-spacing: 0.12em;
       text-transform: uppercase; margin-right: 10px; vertical-align: 2px;
@@ -153,7 +162,22 @@ export const INIT_SCRIPT = String.raw`
 })();
 `;
 
-const BASE_CSS = `
+const FONT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../design/fonts");
+
+/** The cards are `page.setContent()` pages: no stylesheet, so the woff2 faces
+ *  travel inside the HTML or the title card falls back to Helvetica. */
+function brandFaces(): string {
+  const face = (family: string, weight: number, file: string): string => {
+    const data = readFileSync(join(FONT_ROOT, file)).toString("base64");
+    return `@font-face { font-family: "${family}"; font-weight: ${weight}; font-style: normal; src: url(data:font/woff2;base64,${data}) format("woff2"); }`;
+  };
+  return [
+    face("Barlow", 500, "barlow-latin-500-normal.woff2"),
+    face("Barlow Semi Condensed", 700, "barlow-semi-condensed-latin-700-normal.woff2"),
+  ].join("\n");
+}
+
+const BASE_CSS = `${brandFaces()}
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
@@ -164,13 +188,13 @@ const BASE_CSS = `
       radial-gradient(900px 520px at 88% 96%, rgba(240, 161, 58, 0.16), transparent 60%),
       linear-gradient(150deg, #060b13 0%, #091320 52%, #0b1726 100%);
     color: #f6f1e6;
-    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Barlow", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   .card { position: absolute; inset: 0; padding: 58px 76px 196px; display: flex; flex-direction: column; }
   .kicker { font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; color: #8fa6bd; }
   .rule { width: 96px; height: 4px; border-radius: 2px; background: #f0a13a; margin: 22px 0 26px; }
-  .title { font-size: 92px; line-height: 0.98; letter-spacing: 0.11em; font-weight: 800; margin: 0; }
+  .title { font-family: "Barlow Semi Condensed", "Barlow", sans-serif; font-size: 92px; line-height: 0.98; letter-spacing: 0.08em; font-weight: 700; margin: 0; }
   .tagline { font-size: 31px; line-height: 1.32; color: #d7dee6; margin: 26px 0 0; max-width: 1010px; font-weight: 500; }
   .chips { display: flex; gap: 12px; flex-wrap: wrap; margin-top: auto; }
   .chip {
@@ -185,7 +209,7 @@ const BASE_CSS = `
 export function titleCard(): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><style>${BASE_CSS}
     .hero { display: flex; flex-direction: column; justify-content: center; flex: 1; }
-  </style></head><body>
+  </style></head><body data-card="1">
     <div class="card">
       <div class="kicker">Amazon Developer Hackathon · Alexa+ track</div>
       <div class="hero">
@@ -195,8 +219,7 @@ export function titleCard(): string {
       </div>
       <div class="chips">
         <span class="chip amber">DEMO CLOCK</span>
-        <span class="chip">Simulated Alexa+ experience</span>
-        <span class="chip">MCP 2025-11-25 · Streamable HTTP</span>
+        <span class="chip">SIMULATED ALEXA+ EXPERIENCE</span>
       </div>
     </div>
   </body></html>`;
@@ -222,7 +245,7 @@ export function architectureCard(): string {
     .arrow .line::after { content: ""; position: absolute; right: -2px; top: -5px; border-left: 10px solid rgba(127, 209, 255, 0.9); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
     .arrow .label { font-size: 13px; line-height: 1.35; letter-spacing: 0.04em; text-transform: uppercase; }
     .arrow .back { font-size: 12px; color: #ffcf8a; text-transform: uppercase; letter-spacing: 0.06em; }
-  </style></head><body>
+  </style></head><body data-card="1">
     <div class="card">
       <div class="kicker">Under the hood</div>
       <div class="rule"></div>
@@ -257,7 +280,7 @@ export function endCard(): string {
     .hero { display: flex; flex-direction: column; justify-content: center; flex: 1; }
     .repo { font-size: 22px; color: #7fd1ff; letter-spacing: 0.02em; margin-top: 30px; }
     .last { font-size: 40px; font-weight: 700; color: #ffcf8a; margin-top: 46px; letter-spacing: 0.01em; }
-  </style></head><body>
+  </style></head><body data-card="1">
     <div class="card">
       <div class="kicker">Amazon Developer Hackathon · Alexa+ track</div>
       <div class="hero">

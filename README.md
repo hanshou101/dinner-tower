@@ -2,6 +2,8 @@
 
 **Air-traffic control for a Thanksgiving kitchen.** One oven, six dishes, one serve time — Dinner Tower schedules every step backwards so everything lands at 7:00 PM.
 
+![Dinner Tower — the departure board on an Echo-style screen](submission/cover-1500x1000.png)
+
 It is a self-hosted [Model Context Protocol](https://modelcontextprotocol.io) server (spec **2025-11-25**, Streamable HTTP, stateful sessions), an MCP App board, an Agent Skill, and an Echo-style web simulator that is a real MCP client. It is not a recipe chatbot: it owns the plan, answers "what's next?" at 6:20 PM, and replans when the turkey needs twenty more minutes.
 
 ## The problem
@@ -24,21 +26,21 @@ Dinner Tower puts the plan on the server, where it survives the conversation.
 
 ## Demo
 
-**Video:** [Dinner Tower demo — 2:49, English](https://github.com/hanshou101/dinner-tower/releases/tag/demo-v1) (MP4 on the GitHub Release), recorded from the running system; the assistant's lines come from a live LLM (`glm-5.3-flash`). See [How the video is made](#how-the-video-is-made).
+**Video:** [Dinner Tower demo — 2:48, English](https://github.com/hanshou101/dinner-tower/releases/tag/demo-v2) (MP4 on the GitHub Release), recorded from the running system; the assistant's lines come from a live LLM. See [How the video is made](#how-the-video-is-made).
 
-Every frame is the real simulator talking to the real MCP server. Three things are simulated, and the video labels all three: the **demo clock** (one afternoon in three minutes), the **voice** (text-to-speech), and the **Alexa+ surface** (Amazon's Alexa+ developer tools are partner-only, so the Echo Show is a web page that speaks MCP).
+Every frame is the real simulator talking to the real MCP server. Three things are simulated: the **demo clock** (one afternoon in three minutes), the **voice** (text-to-speech), and the **Alexa+ surface** (Amazon's Alexa+ developer tools are partner-only, so the Echo Show is a web page that speaks MCP).
 
-![The board at 1:00 PM](proof/T7-AC8-01-board-serve-1900.png)
+![The board at 1:00 PM](proof/ui/board-1280x720.png)
 
 *1:00 PM. Six dishes, thirteen steps, one 325 °F oven lane, and every dish inside its hold window at the 7:00 PM serve line.*
 
-![The oven question](proof/T7-AC4-03-elicitation-card.png)
+![The oven question](proof/ui/elicitation-1280x720.png)
 
 *The server's own elicitation: one oven, one temperature at a time — share the oven, or keep recipe temperatures and let the stuffing wait.*
 
-![After the delay](proof/T7-AC8-03-board-after-plus10.png)
+![After the delay](proof/ui/replan-1280x720.png)
 
-*6:20 PM, after `report_delay`: SERVE moves to 7:10 PM, nine steps move with it, and the tool call sits in the log next to the board.*
+*6:20 PM, after "the turkey needs twenty more minutes": SERVE moves to 7:20 PM, nine steps move with it, and the `report_delay` call shows under Alexa's reply.*
 
 ### How the video is made
 

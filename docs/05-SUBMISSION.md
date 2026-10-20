@@ -644,11 +644,12 @@ Suggestion: make the JSDoc conditional on the negotiated era, or mark the method
 | 项 | 地址 / 文件 | 状态 |
 | --- | --- | --- |
 | 代码仓库（公开？） | `https://github.com/hanshou101/dinner-tower`（公开、MIT） | 已建（main 快照，单提交） |
-| 演示视频 | `<YOUTUBE_OR_VIMEO_URL>`（Public；成片在 GitHub Release：`https://github.com/hanshou101/dinner-tower/releases/tag/demo-v1`） | 待用户上传 YouTube |
+| 演示视频 | `<YOUTUBE_OR_VIMEO_URL>`（Public；成片在 GitHub Release：`https://github.com/hanshou101/dinner-tower/releases/tag/demo-v2`） | 待用户上传 YouTube |
 | 在线演示地址 | 无（本地运行，规则允许） | — |
 | PPT / PDF | 无（规则不要求） | — |
 | 开源贡献仓库 | `https://github.com/hanshou101/echo-mcp-apps-sim`（公开、MIT） | 已上线 |
-| 视频源文件 | Release 附件 `dinner-tower-demo.mp4`（2:49，真模型 `glm-5.3-flash`；本地产物在 `scripts/demo/out/`，不进 Git） | 已产出 |
+| 视频源文件 | Release `demo-v2` 附件 `dinner-tower-demo.mp4`（2:48 = 168 s，真模型 `glm-5.3-flash`，主控在 macmini2 录制；本地产物在 `scripts/demo/out/`，不进 Git） | 已发布 |
+| 封面图（Devpost 缩略图，3:2） | `submission/cover-1500x1000.png`（设备框里的出发看板 + 字标 + 一句话） | 已产出 |
 
 ## 4. 对照 BRIEF §2 的提交物清单
 
@@ -657,7 +658,7 @@ Suggestion: make the JSDoc conditional on the negotiated era, or mark the method
 | 1 | 文字说明（英文） | ✅ | 本文件 §2「About the project」 |
 | 2 | GitHub 仓库 URL（公开 + 许可证可见） | ✅ `https://github.com/hanshou101/dinner-tower`（公开、MIT，main 快照） | `LICENSE`；SPEC v1.5 |
 | 3 | Alexa+ 技术硬钩（MCP 2025-11-25 over Streamable HTTP，代码里真实 import 并调用） | ✅ | `server/src/index.ts` import `@modelcontextprotocol/server|node|express`；`bash scripts/verify.sh` 的协议检查；`proof/T7-AC1-AC7-probe.txt` |
-| 4 | 演示视频（< 3:00、YouTube/Vimeo 公开、英文、无第三方商标/版权音乐） | ⏳ 成片已产出（2:49 = 169 s、H.264+AAC、1280×720、真模型 `glm-5.3-flash`），已挂 Release `demo-v1`；待用户上传 YouTube | Release 附件 `dinner-tower-demo.mp4`；本地 `scripts/demo/out/`（不进 Git） |
+| 4 | 演示视频（< 3:00、YouTube/Vimeo 公开、英文、无第三方商标/版权音乐） | ⏳ 成片已发 Release `demo-v2`（2:48 = 168 s、H.264+AAC、1280×720、真模型 `glm-5.3-flash`）；待用户上传 YouTube | Release `demo-v2` 附件 `dinner-tower-demo.mp4`；本地 `scripts/demo/out/`（不进 Git） |
 | 5 | 产品反馈（每个工具五问） | ✅ | 本文件 §2「Product feedback」（5 个工具） |
 | 6 | 赛道 + mini challenge | ✅ | 本文件 §2：Alexa+ / Open Source |
 | 7 | Open Source mini challenge 附加字段 | ✅ | 本文件 §2 与 `submission/open-source.md` |
@@ -669,14 +670,15 @@ Suggestion: make the JSDoc conditional on the negotiated era, or mark the method
 
 1. **现在**：用 GitHub 账号确认 `https://github.com/hanshou101/dinner-tower` 已由主控建好、公开、About 显示 MIT；若还没建，先找主控。
 2. **10-23 12:00 前**：准备可上传公开视频的 YouTube（或 Vimeo）账号。
-3. **10-23 20:00 前**：从 Release（`https://github.com/hanshou101/dinner-tower/releases/tag/demo-v1`）下载 `dinner-tower-demo.mp4`，上传 YouTube，标题写 `Dinner Tower — Alexa+ hackathon demo`，可见性 **Public**，语言标 English；把链接回帖到本单。**不要**用样例片 `dinner-tower-sample.mp4`（片尾有 `SAMPLE — SCRIPTED LLM` 字样，只用于自测）。
+3. **10-23 20:00 前**：从 Release（`https://github.com/hanshou101/dinner-tower/releases/tag/demo-v2`）下载 `dinner-tower-demo.mp4`，上传 YouTube，标题写 `Dinner Tower — Alexa+ hackathon demo`，可见性 **Public**，语言标 English；把链接回帖到本单。**不要**用样例片 `dinner-tower-sample.mp4`（片尾有 `SAMPLE — SCRIPTED LLM` 字样，只用于自测）。
 4. 打开 <https://amazonappdev2026.devpost.com/>，点 **Join hackathon**（若还没点）。
 5. 点 **Enter a Submission**，按本文件 §2 的顺序逐字段粘贴：Project name → Elevator pitch → About the project → Built with → 仓库 URL → 视频 URL → Track（Alexa+）→ Mini challenge（Open Source）→ 产品反馈 → Feature requests → Friction log。
-6. Open Source 的四个附加栏：Contribution URL、Project repository URL、GitHub username、What I did / How it works / Why it matters（照 §2 粘贴）。
-7. 视频链接填好后，回到本文件把 `<YOUTUBE_OR_VIMEO_URL>` 替换成真实链接，并在本单评论里贴一次，方便复核。
-8. 提交前最后检查：仓库公开可访问、About 有 MIT、视频 Public 且能播放、表单没有空着的必填项。
-9. 点 **Submit**，截图（提交成功页 + 作品页 URL）回帖到本单。
-10. **10-24 03:00 起至 12-04**：不改仓库 main、不改视频、不改任何作品材料。
+6. 缩略图（Thumbnail，3:2）上传 `submission/cover-1500x1000.png`（Release `demo-v2` 也附了一份）；Image gallery 可再放这张封面和 `proof/ui/board-1280x720.png`、`proof/ui/replan-1280x720.png`。
+7. Open Source 的四个附加栏：Contribution URL、Project repository URL、GitHub username、What I did / How it works / Why it matters（照 §2 粘贴）。
+8. 视频链接填好后，回到本文件把 `<YOUTUBE_OR_VIMEO_URL>` 替换成真实链接，并在本单评论里贴一次，方便复核。
+9. 提交前最后检查：仓库公开可访问、About 有 MIT、视频 Public 且能播放、表单没有空着的必填项。
+10. 点 **Submit**，截图（提交成功页 + 作品页 URL）回帖到本单。
+11. **10-24 03:00 起至 12-04**：不改仓库 main、不改视频、不改任何作品材料。
 
 ## 6. 提交后确认
 

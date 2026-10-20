@@ -59,6 +59,29 @@ export function tempColor(tempF: number): string {
   return best.color;
 }
 
+// One fixed colour per dish, used by the dot in front of every dish name.
+// The server still sends an emoji per dish; the board never renders it — an
+// emoji is a different glyph in every font and reads as a toy at 16px.
+const DISH_COLORS: Record<string, string> = {
+  turkey: "#D9A05B",
+  stuffing: "#C98A4B",
+  mashed_potatoes: "#E7D7A4",
+  green_beans: "#6FAF6A",
+  gravy: "#A9744F",
+  rolls: "#D8B36A",
+};
+
+const FALLBACK_COLORS = ["#D9A05B", "#8FA5C4", "#C98A4B", "#6FAF6A", "#B08BC0", "#D8B36A"];
+
+/** Stable colour for a dish id — same dish, same dot, every render. */
+export function dishColor(dishId: string): string {
+  const fixed = DISH_COLORS[dishId];
+  if (fixed) return fixed;
+  let hash = 0;
+  for (let i = 0; i < dishId.length; i += 1) hash = (hash * 31 + dishId.charCodeAt(i)) >>> 0;
+  return FALLBACK_COLORS[hash % FALLBACK_COLORS.length]!;
+}
+
 export class BoardView {
   private plan: PlanView | null = null;
   private readonly rows = new Map<string, RowRefs>();
@@ -157,6 +180,8 @@ export class BoardView {
 
   private renderRows(plan: PlanView): void {
     const seen = new Set<string>();
+    const changed = new Set(plan.changes.map((change) => change.stepId));
+    let changeIndex = 0;
     for (const step of plan.steps) {
       seen.add(step.stepId);
       let row = this.rows.get(step.stepId);
@@ -164,7 +189,10 @@ export class BoardView {
         row = this.createRow(step);
         this.rows.set(step.stepId, row);
       }
-      this.updateRow(row, step, plan.next);
+      // Changed rows start one after another, top to bottom, so the board
+      // reads as a single downward shuffle instead of nine separate pops.
+      const delay = changed.has(step.stepId) ? changeIndex++ * 40 : 0;
+      this.updateRow(row, step, plan.next, delay);
       // Re-appending keeps the DOM in plan order (steps are sorted by start).
       this.els.rows.append(row.root);
     }
@@ -176,17 +204,18 @@ export class BoardView {
     }
   }
 
-  private updateRow(row: RowRefs, step: PlanStep, next: string[]): void {
+  private updateRow(row: RowRefs, step: PlanStep, next: string[], delayMs = 0): void {
     const badge = statusBadge(step, next);
     row.root.dataset.status = step.status;
     row.root.dataset.badge = badge;
 
-    setFlipText(row.time, formatTime(step.start));
-    row.icon.textContent = step.icon;
-    setFlipText(row.dish, step.dishName);
-    setFlipText(row.step, step.label);
-    setFlipText(row.station, stationText(step));
-    setFlipText(row.badge, badge);
+    setFlipText(row.time, formatTime(step.start), true, delayMs);
+    row.icon.style.background = dishColor(step.dishId);
+    row.icon.title = step.dishName;
+    setFlipText(row.dish, step.dishName, true, delayMs);
+    setFlipText(row.step, step.label, true, delayMs);
+    setFlipText(row.station, stationText(step), true, delayMs);
+    setFlipText(row.badge, badge, true, delayMs);
     row.badge.dataset.badge = badge;
 
     row.delay.hidden = step.status !== "active";
@@ -302,6 +331,24 @@ export class BoardView {
     body.append(lines);
 
     host.append(axis, body);
+    this.fitTimelineLabels(host);
+    // Fonts and the iframe's final width arrive after the first layout.
+    requestAnimationFrame(() => this.fitTimelineLabels(host));
+    void document.fonts?.ready.then(() => this.fitTimelineLabels(host));
+  }
+
+  /**
+   * A "×2" inside a 12-minute segment is wider than the segment: clip it and
+   * the glyphs get sliced. Measure each label against its block and drop the
+   * ones that do not fit; the block keeps its title/tooltip.
+   */
+  private fitTimelineLabels(host: HTMLElement): void {
+    for (const block of Array.from(host.querySelectorAll<HTMLElement>(".tl-block"))) {
+      const label = block.querySelector<HTMLElement>(".tl-block-label");
+      if (!label) continue;
+      if (block.clientWidth <= 0) continue; // not laid out yet
+      if (label.getBoundingClientRect().width + 6 > block.clientWidth) label.remove();
+    }
   }
 
   private renderLane(label: string, laneId: string, blocks: HTMLElement[]): HTMLElement {
